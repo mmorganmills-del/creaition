@@ -264,7 +264,7 @@
       }
       summary.hidden = true;
       var btn = form.querySelector('[type=submit]'), hint = form.querySelector('[data-sending-hint]');
-      btn.disabled = true; btn.textContent = btn.dataset.sending || 'Sending…'; if (hint) hint.hidden = false;
+      btn.disabled = true; btn.textContent = btn.dataset.sending || 'Checking…'; if (hint) hint.hidden = false;
       var first = ((form.querySelector('[name=name]') || {}).value || '').trim().split(/\s+/)[0] || 'there';
       var email = ((form.querySelector('[name=email]') || {}).value || '').trim();
       var estT = (form.querySelector('[name=est_total]') || {}).value;

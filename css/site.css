@@ -623,3 +623,21 @@ body.has-mbar { padding-bottom: calc(var(--mbar-h, 88px)); }
 @media (min-width: 1024px) { .mbar { display: none !important; } body.has-mbar { padding-bottom: 0; } }
 @media (prefers-reduced-motion: reduce) { .mbar { transition: none; } }
 .nav a[aria-current="page"]:focus-visible { box-shadow: inset 0 0 0 1px var(--cr-border), var(--cr-focus-dark); }
+
+/* ===== QA round 1 (2026-11-01) ===== */
+html { scroll-padding-top: 96px; }                       /* sticky header never hides focused/scrolled-to content */
+.foot-col .foot-h { font-size: .8125rem; line-height: 1.6; letter-spacing: .14em; text-transform: uppercase; color: var(--cr-muted); margin: 0 0 var(--cr-space-4); font-weight: 600; }
+.range::-moz-focus-outer { border: 0; }
+.range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--cr-midnight), 0 0 0 6px var(--cr-cyan); }
+.range:hover::-moz-range-thumb { box-shadow: 0 0 0 9px rgba(106,92,255,.4); }
+@media (max-width: 599px) { .soft-panel .dot-v { display: none; } }
+/* plain-text preview notice on the forms (not a placeholder chip) */
+.preview-note { display: block; margin: var(--cr-space-4) 0 0; padding: 12px 20px; border-radius: var(--cr-radius-card); background: var(--cr-midnight); box-shadow: inset 0 0 0 1px var(--cr-input-border); color: var(--cr-white); font-size: var(--cr-fs-small); font-weight: 600; line-height: 1.5; }
+.preview-note--submit { margin-top: var(--cr-space-4); }
+/* safe areas now that every page uses viewport-fit=cover */
+.site-header { padding-top: env(safe-area-inset-top); }
+.site-footer { padding-bottom: calc(var(--cr-space-6) + env(safe-area-inset-bottom)); }
+.drawer.open { top: calc(72px + env(safe-area-inset-top)); }
+.skip:focus { top: calc(12px + env(safe-area-inset-top)); }
+.plan-card .plan-name { line-height: 1.36; letter-spacing: -0.005em; } /* now an h2 (heading order), same look as before */
+.orbit-core img { height: auto; }
