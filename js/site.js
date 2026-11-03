@@ -19,7 +19,7 @@
   var BASE = 250, SIMPLE = 25, FEATURE = 50, MAX = 5;
   var estTotal = function (s, f) { return BASE + SIMPLE * s + FEATURE * f; };
   var PLAN = { none: ['No plan', 0], starter: ['Starter', 49.99], creator: ['Creator', 99.99], infinity: ['Infinity', 249.99] };
-  var HOST = { none: ['No hosting needed', 0], starter: ['Starter Business', 9.99], small: ['Small Business', 15.99], medium: ['Medium Business', 29.99], large: ['Large Business', 49.99] };
+  var HOST = { none: ['No host fee', 0], starter: ['Starter Business', 9.99], small: ['Small Business', 15.99], medium: ['Medium Business', 29.99], large: ['Large Business', 49.99] };
   var EXTRA = 10, EXTRA_MAX = 3, EXTRA_PLANS = ['starter', 'creator'], INCLUDED = { starter: 3, creator: 8 };
   var monthlyTotal = function (p, h, x) { return Math.round(((PLAN[p] || PLAN.none)[1] + (HOST[h] || HOST.none)[1] + x * EXTRA) * 100) / 100; };
   var estHref = function (s, f) { return 'request-more.html?s=' + s + '&f=' + f + '&total=' + estTotal(s, f); };
@@ -37,16 +37,16 @@
       var n = +input.value;
       input.style.setProperty('--p', (n / MAX) * 100 + '%');
       input.setAttribute('aria-valuetext', n + ' ' + word + ' page' + (n === 1 ? '' : 's') + ', ' + money0(n * unit));
-      root.querySelector('[data-out="' + input.dataset.range + '"]').innerHTML = n + ' <span class="eq">×</span> ' + money0(unit) + ' <span class="eq">=</span> ' + money0(n * unit);
+      root.querySelector('[data-out="' + input.dataset.range + '"]').innerHTML = n + ' <span class="eq">×</span> ' + money2(unit) + ' <span class="eq">=</span> ' + money2(n * unit); /* v1 design: cents, per estimator-microcopy A */
       root.querySelectorAll('[data-ticks="' + input.dataset.range + '"] span').forEach(function (t, i) { t.classList.toggle('on', i <= n); });
       return n;
     }
     function update(user) {
       var ns = paint(s, SIMPLE, 'simple'), nf = paint(f, FEATURE, 'feature'), total = estTotal(ns, nf);
-      totalEl.textContent = money0(total);
+      totalEl.textContent = money2(total); /* v1 design: $425.00 */
       if (user && last !== total) { totalEl.classList.remove('bump'); void totalEl.offsetWidth; totalEl.classList.add('bump'); }
       last = total;
-      if (live) { clearTimeout(liveTimer); liveTimer = setTimeout(function () { live.textContent = 'Total: ' + money0(total); }, user ? 250 : 0); }
+      if (live) { clearTimeout(liveTimer); liveTimer = setTimeout(function () { live.textContent = 'Total: ' + money0(total) + '. Paid in full upfront.'; }, user ? 250 : 0); }
       var href = estHref(ns, nf);
       root.querySelectorAll('[data-rm]').forEach(function (a) { a.setAttribute('href', href); });
       document.querySelectorAll('[data-rm-page]').forEach(function (a) { a.setAttribute('href', href); });
@@ -77,8 +77,12 @@
     if (qs.has('x')) extras = clamp(qs.get('x'), 0, EXTRA_MAX);
     var val = function (n) { var c = root.querySelector('input[name="' + n + '"]:checked'); return c ? c.value : 'none'; };
     var liveTimer;
+    var hostSet = root.querySelector('[data-hostset]'), hostNone = root.querySelector('[data-hostnone]');
     function update() {
-      var p = val('plan'), h = val('host');
+      var p = val('plan');
+      /* Host size shows only when a plan is chosen (microcopy B): without a plan it is hidden and reset to no host fee. */
+      if (hostSet) { hostSet.hidden = p === 'none'; if (hostNone) hostNone.hidden = p !== 'none'; if (p === 'none') pick('host', 'none'); }
+      var h = val('host');
       var extrasOn = !!extrasBox && EXTRA_PLANS.indexOf(p) > -1;
       if (!extrasOn) extras = 0; // Infinity / No plan: hidden and reset
       if (extrasBox) {
@@ -89,14 +93,13 @@
       var pn = PLAN[p][0], pv = PLAN[p][1], hn = HOST[h][0], hv = HOST[h][1], ev = extras * EXTRA;
       var total = monthlyTotal(p, h, extras);
       var html = '<div class="inv-row' + (pv ? '' : ' zero') + '"><span>' + pn + '</span><span class="amt">' + money2(pv) + '</span></div>';
-      html += '<div class="inv-row' + (hv ? '' : ' zero') + '"><span>' + (h === 'none' ? 'No hosting needed' : hn + ' hosting') + '</span><span class="amt">' + money2(hv) + '</span></div>';
+      html += '<div class="inv-row' + (hv ? '' : ' zero') + '"><span>' + (h === 'none' ? 'No host fee' : hn + ' hosting') + '</span><span class="amt">' + money2(hv) + '</span></div>';
       if (extras > 0) html += '<div class="inv-row" data-extras-row><span>Extra revisions (' + extras + ' × $10)</span><span class="amt">' + money2(ev) + '</span></div>';
       rows.innerHTML = html;
       totalEl.innerHTML = money2(total) + '<small>/mo</small>';
       var st;
-      if (p === 'none' && h === 'none') st = 'Nothing monthly. Your site, your hosting.';
-      else if (p !== 'none' && h === 'none') st = 'No host fee. Your site doesn\'t need hosting or storage.';
-      else if (p === 'none') st = 'Hosting only. Add a plan for revisions and ongoing care.';
+      if (p === 'none') st = 'Nothing monthly. Your site, your hosting. $0.00/mo';
+      else if (h === 'none') st = 'No host fee. Your site doesn\'t need hosting or storage.';
       else st = pn + ' + ' + hn + ' hosting = ' + money2(total) + '/mo';
       stateEl.textContent = st;
       var mhref = 'request-more.html?plan=' + p + '&host=' + h + '&x=' + extras + '&monthly=' + total.toFixed(2);
@@ -168,7 +171,7 @@
     var lines = [];
     if (est) {
       var total = estTotal(est.s, est.f);
-      lines.push('<span class="muted">Your estimate</span>Home page (landing page) + ' + est.s + ' Simple Pages + ' + est.f + ' Feature Pages · <strong data-snap-total>Total ' + money0(total) + '</strong>');
+      lines.push('<span class="muted">Your estimate</span>Home page (landing page) + ' + est.s + ' Simple Pages + ' + est.f + ' Feature Pages · <strong data-snap-total>Total ' + money2(total) + '</strong> · Paid in full upfront.');
       setH('est_s', est.s); setH('est_f', est.f); setH('est_total', total);
       store.set('cr-estimate', est);
       var ch = snap.querySelector('[data-change-est]'); if (ch) ch.setAttribute('href', 'estimator.html?s=' + est.s + '&f=' + est.f);
@@ -187,8 +190,8 @@
 
   /* ---------- Conditional fields + contact topic help ---------- */
   document.querySelectorAll('[data-show-when]').forEach(function (el) {
-    var kv = el.dataset.showWhen.split('='), name = kv[0], value = kv[1];
-    var sync = function () { var c = document.querySelector('input[name="' + name + '"]:checked, select[name="' + name + '"]'); el.hidden = !(c && c.value === value); };
+    var kv = el.dataset.showWhen.split('='), name = kv[0], values = kv[1].split('|'); // "plan=Starter|Creator|Infinity" = any of
+    var sync = function () { var c = document.querySelector('input[name="' + name + '"]:checked, select[name="' + name + '"]'); el.hidden = !(c && values.indexOf(c.value) > -1); };
     document.querySelectorAll('[name="' + name + '"]').forEach(function (i) { i.addEventListener('change', sync); }); sync();
   });
   var topicHelp = document.querySelector('[data-help="topic"]');
@@ -227,6 +230,7 @@
       if (el.type === 'email' && !EMAIL.test(v)) return d.msgFormat;
       if (el.type === 'tel' && !PHONE.test(v)) return d.msgFormat;
       if (el.type === 'url' && !URLRE.test(v)) return d.msgFormat;
+      if (el.hasAttribute('data-int') && !/^[0-9]{1,3}$/.test(v)) return d.msgFormat;
       if (el.type === 'date') { var today = new Date(); today.setHours(0, 0, 0, 0); var dt = new Date(v + 'T00:00:00'); if (dt < today) return d.msgPast; }
       if (el.minLength > 0 && v.length < el.minLength) return d.msgShort || ('Add at least ' + el.minLength + ' characters.');
       if (el.maxLength > 0 && v.length > el.maxLength) return 'Keep this under ' + el.maxLength + ' characters. (' + v.length + '/' + el.maxLength + ')';
@@ -275,7 +279,7 @@
         wrap.appendChild(document.importNode(tpl.content, true));
         wrap.querySelectorAll('[data-fill="first"]').forEach(function (n) { n.textContent = first; });
         wrap.querySelectorAll('[data-fill="email"]').forEach(function (n) { n.textContent = email; });
-        wrap.querySelectorAll('[data-fill="total"]').forEach(function (n) { n.textContent = estT ? money0(+estT) : ''; });
+        wrap.querySelectorAll('[data-fill="total"]').forEach(function (n) { n.textContent = estT ? money2(+estT) : ''; });
         wrap.querySelectorAll('[data-fill-if="total"]').forEach(function (n) { n.hidden = !estT; });
         form.replaceWith(wrap);
         var done = wrap.querySelector('.form-done'); if (done) done.focus();

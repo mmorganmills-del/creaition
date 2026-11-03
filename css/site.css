@@ -114,7 +114,7 @@ h4, .h4 { font-size: var(--cr-fs-h4); line-height: 1.36; letter-spacing: -0.005e
 .logo-crop--tag { --a: 300px; width: calc(var(--a) * 1.0121); }
 .logo-crop--tag img { width: 100%; }
 .nav { display: flex; gap: 4px; margin-left: auto; }
-.nav a { color: var(--cr-white); text-decoration: none; font-size: 0.9375rem; font-weight: 400; padding: 10px 16px; border-radius: var(--cr-radius-pill); transition: background var(--cr-dur-fast) var(--cr-ease), color var(--cr-dur-fast) var(--cr-ease); }
+.nav a { color: var(--cr-white); text-decoration: none; font-size: 0.9375rem; font-weight: 400; padding: 10px 16px; white-space: nowrap; border-radius: var(--cr-radius-pill); transition: background var(--cr-dur-fast) var(--cr-ease), color var(--cr-dur-fast) var(--cr-ease); }
 .nav a:hover { background: var(--cr-surface); }
 .nav a[aria-current="page"] { background: var(--cr-surface); box-shadow: inset 0 0 0 1px var(--cr-border); }
 .nav a[aria-current="page"]::after { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--cr-cyan); margin-left: 8px; vertical-align: middle; transform: translateY(-1px); }
@@ -567,6 +567,8 @@ legend { font-weight: 600; font-size: 1.0625rem; padding: 0; margin-bottom: 4px;
 .stepper-row .opt-tag { white-space: nowrap; display: inline-block; }
 .plan-price .lbl { white-space: nowrap; }
 @media (max-width: 599px) { .plan-price .amt { font-size: 2rem; } }
+@media (max-width: 1199px) { .nav a { padding: 10px 12px; } }  /* QA site v1 fix 2 */
+@media (max-width: 1279px) { .plan-price { flex-wrap: wrap; } .plan-price .lbl { flex-basis: 100%; margin: 0 0 8px; } }  /* QA site v1 fix 1; to 1279 (not 1199) because Infinity's "/mo" still runs up to 14px into the card padding at 1200-1249 */
 
 .split > .port-l { grid-column: 1 / span 6; }
 .split > .port-r { grid-column: 7 / span 6; }
@@ -641,3 +643,20 @@ html { scroll-padding-top: 96px; }                       /* sticky header never 
 .skip:focus { top: calc(12px + env(safe-area-inset-top)); }
 .plan-card .plan-name { line-height: 1.36; letter-spacing: -0.005em; } /* now an h2 (heading order), same look as before */
 .orbit-core img { height: auto; }
+
+/* ---- Build, site v1 (2026-11-03): small additions for copy v2 pages beyond Design's Home + Estimator (site-v1.css stays Design's file, untouched) ---- */
+.opt .d .pending--block { margin-top: 6px; font-size: .75rem; }
+.steps li.is-optional::before { box-shadow: inset 0 0 0 1.5px var(--cr-cyan); color: var(--cr-cyan); }
+.pay-line { margin: var(--cr-space-4) 0 0; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--cr-white); }
+.pay-line::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--cr-cyan); box-shadow: 0 0 10px var(--cr-cyan); }
+.plan-note { margin: calc(-1 * var(--cr-space-3)) 0 var(--cr-space-5); color: var(--cr-cyan); font-weight: 600; }
+.plan-top .pending--block { margin: 0; flex-basis: 100%; }
+.proj-card { display: flex; gap: var(--cr-space-6); align-items: center; flex-wrap: wrap; box-shadow: inset 0 0 0 1px var(--cr-border); background: linear-gradient(rgba(30,24,51,.6), rgba(30,24,51,.6)); }
+.proj-art { flex: none; width: 160px; aspect-ratio: 4 / 3; border-radius: var(--cr-radius-card); display: grid; place-items: center; background: var(--cr-midnight); box-shadow: inset 0 0 0 1.5px rgba(106,92,255,.55); opacity: .8; }
+.proj-art img { width: 56px; height: 56px; filter: grayscale(.3); }
+.proj-body { flex: 1 1 280px; min-width: 0; }
+.proj-chip { display: inline-block; margin-bottom: var(--cr-space-3); padding: 4px 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--cr-input-border); font-size: .875rem; }
+.proj-title { margin: 0 0 6px; }
+.proj-type { margin: 0 0 var(--cr-space-3); }
+.snapshot .s-text .nudge { display: block; margin-top: 4px; color: var(--cr-muted); font-size: .875rem; }
+@media (max-width: 599px) { .proj-art { width: 100%; max-width: 220px; } }

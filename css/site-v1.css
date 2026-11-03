@@ -1,0 +1,42 @@
+/* Creaition site v1 design deltas (Creaition Design, 2026-11-03).
+   Loaded AFTER Build's css/site.css. Everything here is additive; no Build rule is removed.
+   Spec: design/design-spec-site-v1.md */
+
+/* 1. Pending items: tasteful italic text, replaces Build's dashed .ph chip */
+.pending { font-style: italic; font-weight: 400; color: var(--cr-muted); letter-spacing: 0; text-transform: none; }
+.pending--block { display: block; margin-top: var(--cr-space-2); font-size: var(--cr-fs-small); line-height: 1.5; }
+.on-aurora .pending { color: var(--cr-black); }
+.foot-contact .pending { font-size: var(--cr-fs-small); }
+.foot-contact .sep { color: var(--cr-border); }
+
+/* 2. Estimator: price line + paid-upfront line under Total */
+.slider-top { flex-wrap: wrap; row-gap: 2px; }
+.slider-top label .each { color: var(--cr-muted); font-weight: 400; }
+.est-total { align-items: baseline; }
+.est-paid { margin: var(--cr-space-3) 0 0; display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 600; color: var(--cr-white); }
+.est-paid::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--cr-cyan); box-shadow: 0 0 10px var(--cr-cyan); }
+.est-line .price { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 3. How it works teaser: 7-step journey rail */
+.journey { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 0; position: relative; counter-reset: j; }
+.journey::before { content: ""; position: absolute; left: calc(100% / 14); right: calc(100% / 14); top: 23px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #6A5CFF 0%, #6A5CFF 40%, #FF5CA8 100%); opacity: .7; }
+.journey li { position: relative; display: grid; justify-items: center; gap: 12px; text-align: center; font-weight: 600; font-size: var(--cr-fs-small); }
+.journey li::before { counter-increment: j; content: counter(j); width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--cr-midnight); box-shadow: inset 0 0 0 1.5px var(--cr-violet); }
+.journey li.is-optional::before { box-shadow: inset 0 0 0 1.5px var(--cr-cyan); color: var(--cr-cyan); }
+@media (max-width: 1023px) {
+  .journey { grid-template-columns: 1fr; gap: 14px; }
+  .journey::before { left: 23px; right: auto; top: 24px; bottom: 24px; width: 2px; height: auto; background: linear-gradient(#6A5CFF, #FF5CA8); }
+  .journey li { grid-template-columns: 48px 1fr; justify-items: start; align-items: center; text-align: left; gap: 16px; font-size: 1rem; }
+}
+
+/* 4. Hero headline: keep "fun-ctional." on the violet half of the gradient */
+.hero .display .grad-text { background: linear-gradient(90deg, #6A5CFF 0%, #8F5CEB 55%, #B45CD4 100%); -webkit-background-clip: text; background-clip: text; }
+@media (max-width: 599px) { .hero .display { font-size: 2.5rem; } }
+
+/* 5. Estimator page panels (replaces Build's inline padding:48px, which squeezed text at 390) */
+.v1-pad { padding: var(--cr-space-7); }
+.v1-after { margin-top: var(--cr-gutter); display: flex; gap: var(--cr-space-5); align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 40px 48px; }
+@media (max-width: 599px) { .v1-pad, .v1-after { padding: 28px 24px; } }
+
+/* 6. Footer contact line: separators only on one line (desktop/tablet) */
+@media (max-width: 599px) { .foot-contact { flex-direction: column; align-items: flex-start; gap: 6px; } .foot-contact .sep { display: none; } }
